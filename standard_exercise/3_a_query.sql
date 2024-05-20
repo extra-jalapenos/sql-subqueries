@@ -1,0 +1,42 @@
+-- maybe it's the null-counts?
+SELECT COUNT(AC_POWER) AS AC_NULL, COUNT(DC_POWER) AS DC_NULL, PLANT_ID
+FROM `sql-sandbox-20240505.SolarPower.Generation_Data`
+GROUP BY PLANT_ID;
+-- no, they seem similar
+
+-- maybe we need to filter for DC_Power > 0 before the average?
+WITH DC_AC_PER_PLANT AS (
+	SELECT ROUND(AVG(DC_POWER),2) As AVG_DC,
+	ROUND(AVG(AC_POWER),2) AS AVG_AC,
+	PLANT_ID
+	FROM `sql-sandbox-20240505.SolarPower.Generation_Data`
+	WHERE DC_POWER > 0
+	GROUP BY PLANT_ID
+)
+
+SELECT *, ROUND(AVG_AC / AVG_DC, 3) AS INV_EFFICIENCY
+FROM DC_AC_PER_PLANT
+ORDER BY INV_EFFICIENCY DESC;
+
+WITH DC_AC_PER_PLANT AS (
+	SELECT DC_POWER,
+	ROUND(AVG(AC_POWER),2) AS AVG_AC,
+	PLANT_ID
+	FROM `sql-sandbox-20240505.SolarPower.Generation_Data`
+	WHERE DC_POWER > 0
+	GROUP BY PLANT_ID
+)
+
+SELECT *, ROUND(AVG_AC / AVG_DC, 3) AS INV_EFFICIENCY
+FROM DC_AC_PER_PLANT
+ORDER BY INV_EFFICIENCY DESC;
+
+-- it's because one plant has outrageously many values above 1.400
+SELECT COUNT(*) AS DC_ABOVE_1400, PLANT_ID
+FROM `sql-sandbox-20240505.SolarPower.Generation_Data`
+WHERE DC_POWER > 1400
+GROUP BY PLANT_ID;
+
+SELECT DC_POWER, AC_POWER, (DC_POWER / AC_POWER) AS EFF, PLANT_ID
+FROM `sql-sandbox-20240505.SolarPower.Generation_Data`
+WHERE DC_POWER > 1400
