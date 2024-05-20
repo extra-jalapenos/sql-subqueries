@@ -1,0 +1,12 @@
+{
+	"sqltools.connections": [
+		{
+			"name": "BigQuery",
+			"authenticator": "SERVICE_ACCOUNT",
+			"location": "us",
+			"previewLimit": 50,
+			"driver": "BigQuery",
+			"keyfile": "/Users/alexandriadouillette/Downloads/sql-sandbox-20240505-b9fcee153195.json"
+		}
+	]
+}
